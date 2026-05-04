@@ -47,25 +47,34 @@ constructor(sampleRate, fftSize = 8192) {
         return mag > 0 ? v.map(x => x / mag) : v;
     }
 
-    detectChord(chroma, threshold = 0.5) {
-        // 閾値以上の音を取得
-        let activeNotes = [];
-        chroma.forEach((val, i) => {
-            if (val > threshold) activeNotes.push(i);
-        });
+    detectChord(chroma) {
+        // インデックスと値のペアを作り、数値の大きい順にソート
+        const sorted = Array.from(chroma)
+            .map((val, i) => ({ index: i, value: val }))
+            .sort((a, b) => b.value - a.value);
 
-        if (activeNotes.length < 3) return "---";
+        // 上位3つの音を取得
+        const top3 = sorted.slice(0, 3);
+        
+        // 全体のエネルギーが低すぎる場合は無視
+        if (top3[0].value < 0.1) return "---";
 
-        // 最もエネルギーが高い音をRoot（根音）と仮定して簡易判定
-        const root = chroma.indexOf(Math.max(...chroma));
-        const relativeNotes = activeNotes.map(n => (n - root + 12) % 12).sort((a, b) => a - b);
+        // トップ3のインデックス（音名番号）を抽出
+        const activeNotes = top3.map(d => d.index);
+        
+        // 1位の音をRoot（根音）としてインターバルを計算
+        const root = activeNotes[0];
+        const relative = activeNotes.map(n => (n - root + 12) % 12).sort((a, b) => a - b);
 
+        // メジャーコード（0, 4, 7）などのテンプレート照合[cite: 1]
         for (let [type, template] of Object.entries(this.chordTemplates)) {
-            // テンプレートの音が全て含まれているかチェック
-            if (template.every(t => relativeNotes.includes(t))) {
+            if (template.every(t => relative.includes(t))) {
                 return this.noteNames[root] + type;
             }
         }
-        return "Unknown";
+
+        // テンプレートにない場合は音名を並べる（例：C+E+G）
+        // ここで正しい音名が出るようになれば成功です
+        return activeNotes.map(n => this.noteNames[n]).sort().join('+');
     }
 }
