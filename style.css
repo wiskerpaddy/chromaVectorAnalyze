@@ -60,23 +60,30 @@ button {
 }
 
 /* 楽譜エリアの背景と枠線 */
+#sheet-music svg * {
+    fill: #000000 !important;   /* 塗りつぶしを黒に */
+    stroke: #000000 !important; /* 線を黒に */
+    stroke-width: 0.5;          /* 線の太さを安定させる */
+    opacity: 1 !important;      /* 透明度を無効化 */
+}
+
+/* 五線譜の横線などはstrokeをメインにする */
+#sheet-music svg path, 
+#sheet-music svg line {
+    stroke: #000000 !important;
+    stroke-width: 1.2 !important; /* 五線譜を少し太くして視認性を上げる */
+}
+
+/* 楽譜背景の白を際立たせる */
 #sheet-music-wrapper {
-    background: #ffffff !important; /* 真っ白な背景 */
-    border: 1px solid var(--accent-color); /* アプリのテーマ色で細い枠線を引く */
+    background: #ffffff !important;
+    border: 2px solid var(--accent-color);
+    padding: 10px;
     border-radius: 8px;
-    margin: 20px 0;
-    padding: 15px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3); /* 少し浮かせて視認性を向上 */
 }
 
-/* 楽譜（SVG）の中身を真っ黒にする */
-#sheet-music svg {
-    fill: #000000 !important; /* 音符、記号などを黒に */
-}
-
-#sheet-music svg path {
-    stroke: #000000 !important; /* 五線譜、符尾、シャープなどを黒に */
-    stroke-width: 1.2; /* 線をわずかに太くして「薄さ」を解消 */
+#sheet-music svg .abcjs-note {
+    fill: #000000 !important; /* 音符の中身を強制的に黒く塗りつぶす */
 }
 
 /* --- 追加: 履歴表示エリア --- */

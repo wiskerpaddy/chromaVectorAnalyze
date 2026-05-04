@@ -28,24 +28,26 @@ const barElements = labels.map(label => {
     return bar;
 });
 
-// 楽譜更新関数
-// main.js の updateSheetMusic 関数を修正
 function updateSheetMusic() {
-    let abcString = "X:1\nM:4/4\nL:1/4\nK:C\n";
+    // L:1/4 を指定して、基本の長さを四分音符（黒塗り）にする
+    let abcString = "X:1\nM:4/4\nL:1/4\nK:C\n"; 
     let measureContent = "";
+    
     chordHistory.forEach((chord, index) => {
         const notes = engine.getABCNotes(chord); 
-        measureContent += `${notes} `;
+        // 音符の後に 1 を付けて、四分音符（黒塗り）として確定させる
+        measureContent += `${notes}1 `; 
+        
         if ((index + 1) % 4 === 0) measureContent += "| ";
     });
+
     abcString += "| " + measureContent;
 
     if (window.ABCJS) {
         ABCJS.renderAbc("sheet-music", abcString, { 
             responsive: "resize",
-            scale: 1.8,          // ★ 全体をさらに大きく (1.5 -> 1.8)
-            add_classes: true,   // ★ CSSで色を制御できるようにクラスを付与
-            staffwidth: 800      // ★ 譜面の幅を固定して線が細くなるのを防ぐ
+            scale: 1.5,
+            add_classes: true
         });
     }
 }
