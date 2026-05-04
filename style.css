@@ -12,11 +12,14 @@ body {
     font-family: 'Segoe UI', sans-serif;
     display: flex;
     justify-content: center;
-    padding: 20px;
+    padding: 10px; /* 余白をモバイル向けに調整 */
     margin: 0;
 }
 
-.container { width: 100%; max-width: 900px; }
+.container { 
+    width: 100%; 
+    max-width: 900px; 
+}
 
 header {
     display: flex;
@@ -26,6 +29,7 @@ header {
     border-bottom: 1px solid #333;
 }
 
+/* ボタンのレスポンシブ対応 */
 button {
     background-color: var(--accent-color);
     color: #000;
@@ -35,6 +39,7 @@ button {
     border-radius: 4px;
     cursor: pointer;
     transition: all 0.3s;
+    white-space: nowrap;
 }
 
 #chordDisplay {
@@ -48,9 +53,42 @@ button {
 }
 
 #chordName {
-    font-size: 4rem;
+    /* 画面幅に合わせてフォントサイズを可変に (最小2.5rem, 最大4rem) */
+    font-size: clamp(2.5rem, 10vw, 4rem);[cite: 6]
     font-weight: bold;
     letter-spacing: 2px;
+}
+
+/* 楽譜エリアの背景と枠線 */
+#sheet-music-wrapper {
+    background: #ffffff !important; /* 真っ白な背景 */
+    border: 1px solid var(--accent-color); /* アプリのテーマ色で細い枠線を引く */
+    border-radius: 8px;
+    margin: 20px 0;
+    padding: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3); /* 少し浮かせて視認性を向上 */
+}
+
+/* 楽譜（SVG）の中身を真っ黒にする */
+#sheet-music svg {
+    fill: #000000 !important; /* 音符、記号などを黒に */
+}
+
+#sheet-music svg path {
+    stroke: #000000 !important; /* 五線譜、符尾、シャープなどを黒に */
+    stroke-width: 1.2; /* 線をわずかに太くして「薄さ」を解消 */
+}
+
+/* --- 追加: 履歴表示エリア --- */
+#chord-history {
+    background: var(--panel-bg);
+    padding: 15px;
+    border-radius: 8px;
+    font-family: monospace;
+    color: #888;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+    word-break: break-all;
 }
 
 .visualizer-wrapper {
@@ -74,7 +112,7 @@ button {
     color: #666;
 }
 
-.line[style*="30%"] { 
+.line[style*="50%"] { /* 閾値の線を50%に修正 */
     border-top-color: var(--threshold-color); 
     color: var(--threshold-color); 
 }
@@ -83,7 +121,7 @@ button {
     position: relative;
     display: grid;
     grid-template-columns: repeat(12, 1fr);
-    gap: 10px;
+    gap: 10px;[cite: 6]
     height: 100%;
     align-items: end;
     z-index: 2;
@@ -98,14 +136,35 @@ button {
 
 .bar {
     width: 100%;
-    background: linear-gradient(to top, var(--accent-color), #bcff00);
+    background: linear-gradient(to top, var(--accent-color), #bcff00);[cite: 6]
     border-radius: 2px;
-    transition: height 0.05s ease-out;
+    transition: height 0.05s ease-out;[cite: 6]
 }
 
 .label {
     text-align: center;
-    font-size: 0.9rem;
-    margin-top: 10px;
-    font-weight: bold;
+    font-size: 0.9rem;[cite: 6]
+    margin-top: 10px;[cite: 6]
+    font-weight: bold;[cite: 6]
+}
+
+/* --- 追加: モバイル対応 --- */
+@media (max-width: 600px) {
+    header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+    
+    .visualizer-wrapper {
+        height: 250px; /* スマホでは高さを抑える */
+    }
+    
+    .chroma-grid {
+        gap: 4px; /* バーの隙間を狭く */
+    }
+    
+    .label {
+        font-size: 0.7rem;
+    }
 }

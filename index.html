@@ -3,39 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chroma Chord Detector</title>
+    <title>Chroma Engine v2 - Sheet Music Mode</title>
     <link rel="stylesheet" href="style.css">
+    <!-- abcjs ライブラリの読み込み -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/abcjs/6.2.2/abcjs-basic-min.js"></script>
 </head>
 <body>
     <div class="container">
         <header>
             <h1>CHROMA ENGINE v2</h1>
-            <!-- ボタン一つでStart/Stopを切り替え -->
             <button id="toggleBtn">Start Analyzer</button>
         </header>
 
         <main>
-            <!-- 判定されたコードを表示するエリア -->
             <div id="chordDisplay">
                 <span class="label">DETECTED CHORD</span>
                 <div id="chordName">---</div>
             </div>
 
+            <!-- 楽譜表示エリアを追加 -->
+            <div id="sheet-music-wrapper" style="background: white; margin: 20px 0; border-radius: 8px; padding: 10px;">
+                <div id="sheet-music"></div>
+            </div>
+            
+            <!-- 履歴表示エリアを追加 -->
+            <div id="chord-history" style="margin-bottom: 20px; font-family: monospace; color: #aaa; font-size: 0.9rem;">
+                History: <span id="history-content">---</span>
+            </div>
+
             <div class="visualizer-wrapper">
-                <!-- グラフのメモリ線 -->
+                <!-- グリッド線等の既存構成 -->
                 <div class="grid-lines">
-                    <div class="line" style="bottom: 80%;"><span>0.8</span></div>
-                    <div class="line" style="bottom: 60%;"><span>0.6</span></div>
                     <div class="line" style="bottom: 50%; border-top-color: var(--threshold-color);">
                         <span style="color: var(--threshold-color);">0.5 (Threshold)</span>
                     </div>
-                    <div class="line" style="bottom: 40%;"><span>0.4</span></div>
-                    <div class="line" style="bottom: 20%;"><span>0.2</span></div>
                 </div>
                 <div id="visualizer" class="chroma-grid"></div>
             </div>
-            
-            <div id="status">Status: Ready</div>
         </main>
     </div>
     <script src="engine.js"></script>
