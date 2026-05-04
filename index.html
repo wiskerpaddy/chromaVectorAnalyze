@@ -32,15 +32,18 @@
                 History: <span id="history-content">---</span>
             </div>
 
-            <div class="visualizer-wrapper">
-                <!-- グリッド線等の既存構成 -->
-                <div class="grid-lines">
-                    <div class="line" style="bottom: 50%; border-top-color: var(--threshold-color);">
-                        <span style="color: var(--threshold-color);">0.5 (Threshold)</span>
-                    </div>
+        <div class="visualizer-wrapper">
+            <div class="grid-lines">
+                <!-- 成功画像に合わせて目盛りを追加 -->
+                <div class="line" style="bottom: 80%;"><span>0.8</span></div>
+                <div class="line" style="bottom: 60%;"><span>0.6</span></div>
+                <div class="line" style="bottom: 50%; border-top-color: var(--threshold-color);">
+                    <span style="color: var(--threshold-color);">0.5 (Threshold)</span>
                 </div>
-                <div id="visualizer" class="chroma-grid"></div>
+                <div class="line" style="bottom: 40%;"><span>0.4</span></div>
             </div>
+            <div id="visualizer" class="chroma-grid"></div>
+        </div>
         </main>
     </div>
     <script src="engine.js"></script>

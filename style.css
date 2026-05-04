@@ -6,6 +6,12 @@
     --text-color: #e0e0e0;
 }
 
+/* 全体的なボックスサイズの計算を正確にする */
+* {
+    box-sizing: border-box;
+}
+
+/* ボディの余白を最小限に */
 body {
     background-color: var(--bg-color);
     color: var(--text-color);
@@ -14,11 +20,13 @@ body {
     justify-content: center;
     padding: 10px; /* 余白をモバイル向けに調整 */
     margin: 0;
+    overflow-x: hidden; /* 横スクロールを完全に禁止 */
 }
 
-.container { 
-    width: 100%; 
-    max-width: 900px; 
+/* コンテナの幅を画面一杯に */
+.container {
+    width: 100%;
+    max-width: 900px;
 }
 
 header {
@@ -103,7 +111,7 @@ button {
     height: 350px;
     background: var(--panel-bg);
     border-radius: 8px;
-    padding: 20px;
+    padding: 20px 20px 40px 20px; /* 下にラベル用の余白を確保 */
 }
 
 .grid-lines {
@@ -125,53 +133,77 @@ button {
 }
 
 .chroma-grid {
-    position: relative;
     display: grid;
     grid-template-columns: repeat(12, 1fr);
-    gap: 10px;[cite: 6]
-    height: 100%;
-    align-items: end;
+    gap: 10px;
+    height: 100%; /* 親の350px一杯に広げる */
+    align-items: flex-end; /* 中身を下に寄せる */
     z-index: 2;
+    position: relative;
 }
 
 .chroma-bar-container {
-    height: 100%;
+    height: 100%; /* これがないと上に張り付きます */
     display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
+    flex-direction: column; 
+    justify-content: flex-end; /* 下から順に積み上げる */
 }
 
 .bar {
     width: 100%;
-    background: linear-gradient(to top, var(--accent-color), #bcff00);[cite: 6]
-    border-radius: 2px;
-    transition: height 0.05s ease-out;[cite: 6]
+    background: linear-gradient(to top, var(--accent-color), #bcff00);
+    border-radius: 4px 4px 0 0;
+    transition: height 0.1s ease-out;
 }
 
 .label {
+    height: 30px;
+    line-height: 30px;
     text-align: center;
-    font-size: 0.9rem;[cite: 6]
-    margin-top: 10px;[cite: 6]
-    font-weight: bold;[cite: 6]
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: var(--text-color);
+    margin-top: 5px;
 }
 
-/* --- 追加: モバイル対応 --- */
+/*[cite: 8] スマホ向けの詳細設定 */
 @media (max-width: 600px) {
-    header {
-        flex-direction: column;
-        gap: 15px;
-        text-align: center;
+    h1 {
+        font-size: 1.2rem; /* タイトルを小さく */
+        margin: 5px 0;
     }
-    
+
+    #chordDisplay {
+        padding: 15px; /* 内側の余白を削る */
+        margin: 10px 0;
+    }
+
+    /*[cite: 8] 楽譜エリアの高さを抑える */
+    #sheet-music-wrapper {
+        margin: 5px 0;
+        padding: 5px;
+    }
+
+    /*[cite: 8] 履歴エリアを一行に収める */
+    #chord-history {
+        padding: 8px;
+        margin-bottom: 10px;
+        font-size: 0.8rem;
+    }
+
+    /*[cite: 8] ビジュアライザーの高さをさらに抑える */
     .visualizer-wrapper {
-        height: 250px; /* スマホでは高さを抑える */
+        height: 200px; /* 250pxからさらに短縮 */
+        padding: 10px;
     }
-    
+
+    /*[cite: 8] バーの隙間を最小にして見切れを防ぐ */
     .chroma-grid {
-        gap: 4px; /* バーの隙間を狭く */
+        gap: 2px; 
     }
-    
+
     .label {
-        font-size: 0.7rem;
+        font-size: 0.6rem; /* 音階ラベルを最小化 */
+        margin-top: 4px;
     }
 }

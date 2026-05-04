@@ -13,26 +13,26 @@ let lastDetectedInternal = "";
 let isAnalyzing = false;
 let audioCtx, source, analyser, detectionInterval, engine;
 let currentMode = 3;
+let barElements = []; // ここで空配列として定義
 const labels = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 
-// バーの要素を格納する配列（空で定義）
-let barElements = [];
-
 function init() {
-    // 1. バーの生成をここで行う（HTMLの読み込み完了後）
+    //[cite: 7] ページ読み込み後に確実にバーを生成する
     if (visualizer && barElements.length === 0) {
+        visualizer.innerHTML = ""; // 重複防止
         barElements = labels.map(label => {
             const container = document.createElement('div');
             container.className = 'chroma-bar-container';
             
             const bar = document.createElement('div');
             bar.className = 'bar';
-            bar.style.height = "0%"; // 初期値
+            bar.style.height = "0%"; // 初期状態
             
             const lb = document.createElement('div');
             lb.className = 'label';
             lb.innerText = label;
             
+            // 重要：先にバー、次にラベルの順で追加
             container.appendChild(bar);
             container.appendChild(lb);
             visualizer.appendChild(container);
@@ -45,12 +45,10 @@ function init() {
     const ctx = new AudioContext();
     engine = new ChromaEngine(ctx.sampleRate);
     engine.maxNotes = 3; 
-    
     if (modeBtn) modeBtn.onclick = toggleMode;
 }
 
-// --- ページ読み込み完了時に init を実行 ---
-window.onload = init;
+window.onload = init; // 確実に実行
 
 function updateSheetMusic() {
     let abcString = "X:1\nM:4/4\nL:1/4\nK:C\n"; 
