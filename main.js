@@ -1,7 +1,8 @@
-const toggleBtn = document.getElementById('toggleBtn');
+const startBtn = document.getElementById('startBtn');
 const chordNameDisp = document.getElementById('chordName');
 const visualizer = document.getElementById('visualizer');
 const historyDisp = document.getElementById('history-content');
+const modeBtn = document.getElementById('modeToggle');
 
 let chordHistory = []; 
 const MAX_HISTORY = 8; 
@@ -11,33 +12,53 @@ let sameChordCount = 0;
 let lastDetectedInternal = "";
 let isAnalyzing = false;
 let audioCtx, source, analyser, detectionInterval, engine;
-
+let currentMode = 3;
 const labels = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 
-const barElements = labels.map(label => {
-    const container = document.createElement('div');
-    container.className = 'chroma-bar-container';
-    const bar = document.createElement('div');
-    bar.className = 'bar';
-    const lb = document.createElement('div');
-    lb.className = 'label';
-    lb.innerText = label;
-    container.appendChild(bar);
-    container.appendChild(lb);
-    visualizer.appendChild(container);
-    return bar;
-});
+// バーの要素を格納する配列（空で定義）
+let barElements = [];
+
+function init() {
+    // 1. バーの生成をここで行う（HTMLの読み込み完了後）
+    if (visualizer && barElements.length === 0) {
+        barElements = labels.map(label => {
+            const container = document.createElement('div');
+            container.className = 'chroma-bar-container';
+            
+            const bar = document.createElement('div');
+            bar.className = 'bar';
+            bar.style.height = "0%"; // 初期値
+            
+            const lb = document.createElement('div');
+            lb.className = 'label';
+            lb.innerText = label;
+            
+            container.appendChild(bar);
+            container.appendChild(lb);
+            visualizer.appendChild(container);
+            
+            return bar; 
+        });
+    }
+
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    const ctx = new AudioContext();
+    engine = new ChromaEngine(ctx.sampleRate);
+    engine.maxNotes = 3; 
+    
+    if (modeBtn) modeBtn.onclick = toggleMode;
+}
+
+// --- ページ読み込み完了時に init を実行 ---
+window.onload = init;
 
 function updateSheetMusic() {
-    // L:1/4 を指定して、基本の長さを四分音符（黒塗り）にする
     let abcString = "X:1\nM:4/4\nL:1/4\nK:C\n"; 
     let measureContent = "";
     
     chordHistory.forEach((chord, index) => {
         const notes = engine.getABCNotes(chord); 
-        // 音符の後に 1 を付けて、四分音符（黒塗り）として確定させる
         measureContent += `${notes}1 `; 
-        
         if ((index + 1) % 4 === 0) measureContent += "| ";
     });
 
@@ -52,7 +73,7 @@ function updateSheetMusic() {
     }
 }
 
-toggleBtn.onclick = async () => {
+startBtn.onclick = async () => {
     if (!isAnalyzing) {
         if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -62,14 +83,19 @@ toggleBtn.onclick = async () => {
         source.connect(analyser);
 
         engine = new ChromaEngine(audioCtx.sampleRate, analyser.fftSize);
+        engine.maxNotes = currentMode; 
+
         const dataArray = new Float32Array(analyser.frequencyBinCount);
 
         const process = () => {
             analyser.getFloatFrequencyData(dataArray);
-            const chroma = engine.analyze(dataArray);            
+            const chroma = engine.analyze(dataArray);
             
+            // 高さの更新
             chroma.forEach((val, i) => {
-                barElements[i].style.height = `${Math.min(val * 100, 100)}%`;
+                if (barElements[i]) {
+                    barElements[i].style.height = `${Math.min(val * 100, 100)}%`;
+                }
             });
 
             const currentRaw = engine.detectChord(chroma);
@@ -81,30 +107,42 @@ toggleBtn.onclick = async () => {
             }
             lastDetectedInternal = currentRaw;
 
-            // 確定判定
             if (sameChordCount >= 3 && currentRaw !== lastDisplayedChord) {
                 chordNameDisp.innerText = currentRaw;
                 lastDisplayedChord = currentRaw;
 
-                // 履歴保存と楽譜更新
                 if (currentRaw !== "---") {
                     chordHistory.push(currentRaw);
                     if (chordHistory.length > MAX_HISTORY) chordHistory.shift();
-                    
                     updateSheetMusic();
                     historyDisp.innerText = chordHistory.join(' → ');
                 }
             }
         };
 
-        detectionInterval = setInterval(process, 150); // 解析間隔を少し広げて安定化
-        toggleBtn.innerText = "Stop Analyzer";
+        detectionInterval = setInterval(process, 150);
+        startBtn.innerText = "Stop Analyzer";
         isAnalyzing = true;
     } else {
         clearInterval(detectionInterval);
-        source.disconnect();
-        toggleBtn.innerText = "Start Analyzer";
+        if (source) source.disconnect();
+        startBtn.innerText = "Start Analyzer";
         chordNameDisp.innerText = "---";
         isAnalyzing = false;
     }
 };
+
+function toggleMode() {
+    if (!engine) return;
+    if (currentMode === 3) {
+        currentMode = 4;
+        engine.maxNotes = 4;
+        modeBtn.innerText = "Mode: 4-Note";
+        modeBtn.style.backgroundColor = "#ff3d00";
+    } else {
+        currentMode = 3;
+        engine.maxNotes = 3;
+        modeBtn.innerText = "Mode: 3-Note";
+        modeBtn.style.backgroundColor = "var(--accent-color)";
+    }
+}

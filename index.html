@@ -10,11 +10,12 @@
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>CHROMA ENGINE v2</h1>
-            <button id="toggleBtn">Start Analyzer</button>
-        </header>
-
+        <h1>CHROMA ENGINE v2</h1>
+        <div class="controls">
+            <!-- 切り替えボタンを追加 -->
+            <button id="modeToggle" onclick="toggleMode()">Mode: 3-Note</button>
+            <button id="startBtn">Start Analyzer</button>
+        </div>
         <main>
             <div id="chordDisplay">
                 <span class="label">DETECTED CHORD</span>
