@@ -1,6 +1,6 @@
 {
-  "name": "Jazz Metronome",
-  "short_name": "JazzMetronome",
+  "name": "Chroma Engine v2",
+  "short_name": "ChromaEnginev2",
   "start_url": "index.html",
   "display": "standalone",
   "background_color": "#1a1a1a",
